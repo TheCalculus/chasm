@@ -1,7 +1,7 @@
 # chasm
 C(++) to HTML assembler (chasm) for webdev in C(++)<br>
 templating engine keywords:<br>
-<code>
+<pre>
     C_COMMENT, // c comments in chasm templator
     C_VARIABLE, // c variables accessed from chasm templator
     C_BLOCK, // c code blocks (ie loops) accessed from chasm templator
@@ -14,7 +14,7 @@ templating engine keywords:<br>
     JS_BLOCK, // javascript blocks in chasm templator
     TEMPLATE_CLOSE_EXPRESSION, // template expression close (}})
     TEMPLATE_OPEN_EXPRESSION, // template expression open ({{)
-</code><br>
+</pre><br>
 TODO:
 <ul>
     <li>finish readme</li>
