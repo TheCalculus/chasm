@@ -1,4 +1,5 @@
 build/
 .vscode/
-*.DS_STORE
+src/.DS_STORE
+.DS_STORE
 *.out
