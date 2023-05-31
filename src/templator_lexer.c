@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#include "templator_lexer.h" // hash(), TOK_TYPE, DOM_OBJ, DOM_OBJ_VALUE, LEXER_ERR, Lexer, Token
-#include "string_reps.h"     // token_reps
+#include "templator_lexer.h"
+#include "string_reps.h"
 
 void scanLiterals(Lexer* lexer, Token* token) {
     if (isalpha(lexer->active)) {
@@ -54,26 +54,13 @@ void tokenize(Lexer* lexer) {
         strcpy(token.value, &lexer->active);
 
         switch (lexer->active) {
-            case '<':
-                token.type = HTML_OPEN;
-                break;
-            case '>':
-                token.type = HTML_CLOSE;
-                break;
-            case '/':
-                token.type = HTML_CLOSE_CAST;
-                break;
-            case '{':
-                token.type = LEFT_BRACE;
-                break;
-            case '}':
-                token.type = RIGHT_BRACE;
-                break;
-            case '@':
-                token.type = CHASM_KWD_CAST;
-                break;
-            default:
-                scanLiterals(lexer, &token);
+            case '<': token.type = HTML_OPEN;   break;
+            case '>': token.type = HTML_CLOSE;  break;
+            case '{': token.type = LEFT_BRACE;  break;
+            case '}': token.type = RIGHT_BRACE; break;
+            case '@': token.type = CHASM_KWD_CAST;  break;
+            case '/': token.type = HTML_CLOSE_CAST; break;
+            default: scanLiterals(lexer, &token);
         }
 
         if(lexer->token_pos >= lexer->size) {
@@ -107,14 +94,4 @@ void free_resources(Lexer* lexer) {
     fclose(lexer->buffer);
     free(lexer->token); 
     free(lexer);
-}
-
-unsigned long hash(const char* str) {
-    unsigned long hash = 5381;
-    int c;
-
-    while ((c = *str++))
-        hash = ((hash << 5) + hash) + c;
-
-    return hash;
 }
