@@ -6,15 +6,7 @@
 #define KWDHASH_IF   5863476    /* equivalent to hash("if")   */
 #define INITIAL_SIZE 25
 
-unsigned long hash(const char* str) {
-    unsigned long hash = 5381;
-    int c;
-
-    while ((c = *str++))
-        hash = ((hash << 5) + hash) + c;
-
-    return hash;
-}
+unsigned long hash(const char* str);
 
 typedef enum {
     CHASM_KWD_CAST, /* @... */

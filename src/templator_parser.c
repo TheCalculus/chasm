@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#include "templator_lexer.h"
-#include "string_reps.h"
+#include "../include/templator_lexer.h"
+#include "../include/string_reps.h"
 
 typedef enum {
     ANCHOR,             /* <a>...</a> */

@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#include "templator_lexer.h"
-#include "string_reps.h"
+#include "../include/templator_lexer.h"
+#include "../include/string_reps.h"
 
 void scanLiterals(Lexer* lexer, Token* token) {
     if (isalpha(lexer->active)) {
@@ -19,7 +19,7 @@ void scanLiterals(Lexer* lexer, Token* token) {
 
         literal[++size] = '\0';
 
-        unsigned long hashedLiteral = hash(literal);
+        unsigned long hashedLiteral = hash(literal); // templator_lexer.h
 
         switch (hashedLiteral) {
             case KWDHASH_LOOP:
@@ -94,4 +94,14 @@ void free_resources(Lexer* lexer) {
     fclose(lexer->buffer);
     free(lexer->token); 
     free(lexer);
+}
+
+unsigned long hash(const char* str) {
+    unsigned long hash = 5381;
+    int c;
+
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c;
+
+    return hash;
 }
