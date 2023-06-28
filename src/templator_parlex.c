@@ -58,24 +58,63 @@ void tokenize(Lexer* lexer, Parser* parser) {
         strcpy(token.value, &lexer->active);
 
         switch (lexer->active) {
-            case '<': token.type = HTML_OPEN;       break;
+            case '<': 
+                token.type = HTML_OPEN;
+                Node node = {
+                    .attributes = (char**)malloc(sizeof(char*) * 5),
+                    .value      = (char**)malloc(sizeof(char*) * 5),
+                    .attrSize   = 5,
+                    .childSize  = 5,
+                };
+
+                if (parser->active == NULL) {
+                    parser->nodes[parser->position++] = node;
+                    parser->active = &node;
+                    parser->size++;
+                    break;
+                }
+
+                node = (Node) {
+                    .parent     = parser->active,
+                    .isNested   = true,
+                };
+
+                parser->active->children[parser->active->childCount++] = node;
+                parser->active = &node;
+
+                // free during testing because i know im going to cause troubles otherwise
+                free(node.attributes);
+                free(node.value);
+
+                break;
             case '>': token.type = HTML_CLOSE;      break;
             case '{': token.type = LEFT_BRACE;      break;
             case '}': token.type = RIGHT_BRACE;     break;
             case '@': token.type = CHASM_KWD_CAST;  break;
-            case '/': token.type = HTML_CLOSE_CAST; break;
+            case '/': 
+                token.type = HTML_CLOSE_CAST; 
+
+                parser->active->hasFinishedDeclaration = true;
+                parser->active = parser->active->parent;
+                
+                break;
             case '=': token.type = EQUAL_SIGN;      break;
-            default: scanLiterals(lexer, &token);
+            default: 
+                scanLiterals(lexer, &token);
+
+                if (!parser->active->hasFinishedDeclaration) {
+                    // strncpy wont work because each char* in node.attributes is not malloc'd
+                    strncpy(node.attributes[node.attrCount++], token.value, token.size);
+                }
         }
 
         if(lexer->position >= lexer->size) {
-            /* resize token sequence by an arbitrary value to allow for more tokens */
-            lexer->size += 50;  // todo: figure out an efficient way to increase size
+            lexer->size += 50;
             lexer->token = (Token*)realloc(lexer->token, lexer->size * sizeof(Token));
             printf("Token* resized to %zu\n", lexer->size);
         }
 
-        ungetc(lexer->active, lexer->buffer); /* the holy function */
+        ungetc(lexer->active, lexer->buffer);
         memcpy(&lexer->token[lexer->position], &token, sizeof(token));
         fflush(stdout);
 

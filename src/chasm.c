@@ -15,10 +15,12 @@ char* token_reps[END_OF_FILE + 1] = {
 
 int prepare_input() {
     Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
-    lexer->size      = INITIAL_SIZE;
+    lexer->size  = INITIAL_SIZE;
+    lexer->token = (Token*)malloc(sizeof(Token) * lexer->size);
 
     Parser* parser = (Parser*)malloc(sizeof(Parser));
-    parser->size     = INITIAL_SIZE;
+    parser->size   = INITIAL_SIZE;
+    parser->nodes  = (Node*)malloc(sizeof(Node) * parser->size);
 
     if ((lexer->buffer = fopen("chasm.ch", "r")) == NULL) {
         perror(RED "error opening file");
@@ -28,11 +30,10 @@ int prepare_input() {
     printf(GRN "file opened\n" RESET);
 
     lexer->active = fgetc(lexer->buffer);
-    lexer->token  = (Token*)malloc(sizeof(Token) * lexer->size);
 
-    tokenize(lexer, parser);       // templator_lexer.c
-    iterate_tokens(lexer); // templator_lexer.c
-    free_resources(lexer); // templator_lexer.c
+    tokenize(lexer, parser); // templator_lexer.c
+    iterate_tokens(lexer);   // templator_lexer.c
+    free_resources(lexer);   // templator_lexer.c
 
     return 0;
 }

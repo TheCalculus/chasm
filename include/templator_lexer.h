@@ -23,7 +23,7 @@ typedef enum {
 typedef struct {
     TOK_TYPE type;
     char*    value;
-    int      size;
+    size_t   size;
 } Token;
 
 typedef struct {
