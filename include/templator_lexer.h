@@ -16,6 +16,7 @@ typedef enum {
     VARIABLE,       /* <...>{variable}</...> */
     LEFT_BRACE, RIGHT_BRACE,
     HTML_OPEN, HTML_CLOSE, HTML_CLOSE_CAST,
+    EQUAL_SIGN,
     END_OF_FILE,
 } TOK_TYPE;
 
@@ -33,7 +34,7 @@ typedef struct {
     size_t position;   /* current position in token sequence */
 } Lexer;
 
-void tokenize      (Lexer* lexer);
+void tokenize      (Lexer* lexer, Parser* parser);
 void iterate_tokens(Lexer* lexer);
 void free_resources(Lexer* lexer);
 

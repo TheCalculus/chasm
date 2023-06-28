@@ -7,10 +7,17 @@ typedef enum {
               // unpaired to be implemented
 } TAG_PAIRING;
 
+typedef enum {
+    BLOCK,
+    CONTENT,
+    ATTRIBUTE,
+} CONTEXT;
+
 typedef struct Node Node;
 
 struct Node {
     TAG_PAIRING pairing;
+    CONTEXT     context;
     Node*       children;
     Node*       parent;
     char**      attributes;

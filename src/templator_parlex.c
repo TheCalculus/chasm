@@ -8,6 +8,7 @@ file has to be modified */
 #include <ctype.h>
 
 #include "../include/templator_lexer.h"
+#include "../include/templator_parser.h"
 #include "../include/string_reps.h"
 
 void scanLiterals(Lexer* lexer, Token* token) {
@@ -46,7 +47,7 @@ exit:
     }
 }
 
-void tokenize(Lexer* lexer) {
+void tokenize(Lexer* lexer, Parser* parser) {
     while ((lexer->active = getc(lexer->buffer)) != EOF) {
         if (isspace(lexer->active) || !isprint(lexer->active))
             continue;
@@ -57,12 +58,13 @@ void tokenize(Lexer* lexer) {
         strcpy(token.value, &lexer->active);
 
         switch (lexer->active) {
-            case '<': token.type = HTML_OPEN;   break;
-            case '>': token.type = HTML_CLOSE;  break;
-            case '{': token.type = LEFT_BRACE;  break;
-            case '}': token.type = RIGHT_BRACE; break;
+            case '<': token.type = HTML_OPEN;       break;
+            case '>': token.type = HTML_CLOSE;      break;
+            case '{': token.type = LEFT_BRACE;      break;
+            case '}': token.type = RIGHT_BRACE;     break;
             case '@': token.type = CHASM_KWD_CAST;  break;
             case '/': token.type = HTML_CLOSE_CAST; break;
+            case '=': token.type = EQUAL_SIGN;      break;
             default: scanLiterals(lexer, &token);
         }
 
