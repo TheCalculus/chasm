@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "../include/templator_lexer.h"
+#include "../include/templator_parser.h"
 #include "../include/rainbow_output.h"
 
 char* token_reps[END_OF_FILE + 1] = {
@@ -14,9 +15,10 @@ char* token_reps[END_OF_FILE + 1] = {
 
 int prepare_input() {
     Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
-
-    lexer->token_pos = 0;
     lexer->size      = INITIAL_SIZE;
+
+    Parser* parser = (Parser*)malloc(sizeof(Parser));
+    parser->size     = INITIAL_SIZE;
 
     if ((lexer->buffer = fopen("chasm.ch", "r")) == NULL) {
         perror(RED "error opening file");
@@ -28,7 +30,7 @@ int prepare_input() {
     lexer->active = fgetc(lexer->buffer);
     lexer->token  = (Token*)malloc(sizeof(Token) * lexer->size);
 
-    tokenize(lexer);       // templator_lexer.c
+    tokenize(lexer, parser);       // templator_lexer.c
     iterate_tokens(lexer); // templator_lexer.c
     free_resources(lexer); // templator_lexer.c
 

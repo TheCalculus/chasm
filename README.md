@@ -24,14 +24,14 @@
 
 ## Introduction
 
-A toy-project meant to mimic basic functionality of React and other web frameworks.
-I don't see it being used professionally, just because C isn't really a well suited language for this purpose.
+Bring C to the web! An attempt at something like React and Pyscript but for C.
+Why? ██████ ██ █████ ███ ███████ ███ ████ (error loading text content, please try again later)
 
 ## Installation
 
-Using chasm (at its current stage) is exceptionally easy. 
+Using chasm (at its current stage) is exceptionally easy (aka impossible). 
 It is currently not possible to run the `build_run.sh` bash script, as the `build` directory is not in the repo.
-When `chasm` is ready to be "used," run the following in your terminal.
+When `chasm` is ready to be "used" run the following in your terminal.
 
 ```bash
 # cd to chasm root

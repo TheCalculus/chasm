@@ -1,3 +1,6 @@
+// templator_parser.c is about to leave! 
+// TODO: remove all references to templator_parser.c or relevant methods for removal
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

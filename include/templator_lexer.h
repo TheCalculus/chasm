@@ -29,8 +29,8 @@ typedef struct {
     FILE*  buffer;     /* buffer of chasm templator */
     char   active;     /* active character in lexer */
     Token* token;      /* token sequence outputted from lexer */
-    size_t size;       /* current capacity of token sequence */
-    size_t token_pos;  /* current position in token sequence */
+    size_t size;       /* current size of token sequence */
+    size_t position;   /* current position in token sequence */
 } Lexer;
 
 void tokenize      (Lexer* lexer);
