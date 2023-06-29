@@ -6,6 +6,10 @@
 #define KWDHASH_IF   5863476    /* equivalent to hash("if")   */
 #define INITIAL_SIZE 25
 
+#include "stdio.h"
+#include "stdlib.h"
+#include "templator_parser.h"
+
 unsigned long hash(const char* str);
 
 typedef enum {
@@ -34,20 +38,9 @@ typedef struct {
     size_t position;   /* current position in token sequence */
 } Lexer;
 
-int tokenResize(Lexer* lexer) {
-    if (lexer->position >= lexer->size) {
-        lexer->size  += 50;
-        lexer->token = (Token*)realloc(lexer->token, sizeof(Token) * lexer->size);
-        printf("Token* resized to %zu\n", lexer->size);
-        
-        return lexer->token;
-    }
-
-    return 1;
-}
-
-void tokenize      (Lexer* lexer, Parser* parser);
-void iterate_tokens(Lexer* lexer);
-void free_resources(Lexer* lexer);
+void tokenResize  (Lexer* lexer);
+void tokenize     (Lexer* lexer, Parser* parser);
+void iterateTokens(Lexer* lexer);
+void freeResources(Lexer* lexer);
 
 #endif

@@ -12,7 +12,7 @@ typedef enum {
 typedef struct Node Node;
 
 struct Node {
-    Node*    children;
+    Node**   children;
     Node*    parent;
     char**   attributes;
     char**   value;
@@ -30,42 +30,8 @@ typedef struct {
     size_t position; /* current position in node sequence */
 } Parser;
 
-Node defaultNode() {
-    int size = 5;
-
-    Node node = {
-        .attributes = (char**)malloc(sizeof(char*) * size),
-        .value      = (char**)malloc(sizeof(char*) * size),
-        .attrSize   = size,
-        .childSize  = size,
-    };
-
-    for (int i = 0; i < size; i++) {
-        node.attributes[i] = (char*)malloc(sizeof(char) * size);
-        node.value[i]      = (char*)malloc(sizeof(char) * size);
-    }
-}
-
-void freeNode(Node* node) {
-    for (int i = 0; i < node->attrSize; i++)
-        free(node->attributes[i]);
-
-    for (int i = 0; i < node->childSize; i++)
-        free(node->value[i]);
-
-    free(node->attributes);
-    free(node->value);
-}
-
-int attributeResize(Node* node) {
-    if (node->attrCount >= node->attrSize) {
-        node->attrSize   += 5;
-        node->attributes = (char**)realloc(node->attributes, sizeof(char*) * node->attrSize);
-        
-        return node->attributes;
-    }
-
-    return 1;
-}
+Node* defaultNode();
+void  freeNode       (Node* node);
+void  attributeResize(Node* node);
 
 #endif

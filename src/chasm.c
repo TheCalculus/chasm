@@ -10,7 +10,7 @@
 char* token_reps[END_OF_FILE + 1] = {
     "CHASM_KWD_CAST", "CHASM_KWD_LOOP",  "CHASM_KWD_IF", "LITERAL",
     "VARIABLE",       "LEFT_BRACE",      "RIGHT_BRACE",  "HTML_OPEN",
-    "HTML_CLOSE",     "HTML_CLOSE_CAST", "END_OF_FILE",
+    "HTML_CLOSE",     "HTML_CLOSE_CAST", "EQUAL_SIGN", "END_OF_FILE",
 };
 
 int prepare_input() {
@@ -30,10 +30,11 @@ int prepare_input() {
     printf(GRN "file opened\n" RESET);
 
     lexer->active = fgetc(lexer->buffer);
+    ungetc(lexer->active, lexer->buffer);
 
     tokenize(lexer, parser); // templator_lexer.c
-    iterate_tokens(lexer);   // templator_lexer.c
-    free_resources(lexer);   // templator_lexer.c
+    iterateTokens(lexer);    // templator_lexer.c
+    freeResources(lexer);    // templator_lexer.c
 
     return 0;
 }
