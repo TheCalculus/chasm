@@ -34,6 +34,18 @@ typedef struct {
     size_t position;   /* current position in token sequence */
 } Lexer;
 
+int tokenResize(Lexer* lexer) {
+    if (lexer->position >= lexer->size) {
+        lexer->size  += 50;
+        lexer->token = (Token*)realloc(lexer->token, sizeof(Token) * lexer->size);
+        printf("Token* resized to %zu\n", lexer->size);
+        
+        return lexer->token;
+    }
+
+    return 1;
+}
+
 void tokenize      (Lexer* lexer, Parser* parser);
 void iterate_tokens(Lexer* lexer);
 void free_resources(Lexer* lexer);

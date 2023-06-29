@@ -18,30 +18,54 @@ struct Node {
     char**   value;
     bool     isNested;
     bool     hasFinishedDeclaration;
-    int      attrCount, attrSize;
-    int      childCount, childSize;
+    int      attrCount,  attrSize;   /* count is position, size is capacity */
+    int      childCount, childSize;  /* either char* within value (char**) or Node within children (Node*). 
+                                        need to add support for both instead of either-or */
 };
 
 typedef struct {
     Node*  nodes;    /* node sequence outputted from parsing while tokenizing */
     Node*  active;   /* currently active node */
-    size_t size;     /* current size of node sequence */
+    size_t size;     /* current depth of node sequence */
     size_t position; /* current position in node sequence */
 } Parser;
 
-#endif
+Node defaultNode() {
+    int size = 5;
 
-/* oh boy are you in for a treat */
-// 1) check what the previous token was (if any)
-// 2) figure out whether the previous token was a tag
-// 3) if the previous token was a tag then we're probably at an
-// ...attribute. isnt that cool?
-// 4) if we're an = after an attribute or a string after an =, 
-// ...we need to appropriately set the value of the node
-// 5) profit. syntax errors are not my problem. i mean how hard is it
-// ...to mess up nearly vanilla HTML? jk ill figure something out for
-// ...syntax errors later, but i need to get the base system working first
-// 6: system is just a test, i didnt want to iterate throughout entire token
-// ...array again for efficiency reasons. maybe ill remove the token array
-// ...entirely and only store the previous and current token if this system
-// ...works pretty well?
+    Node node = {
+        .attributes = (char**)malloc(sizeof(char*) * size),
+        .value      = (char**)malloc(sizeof(char*) * size),
+        .attrSize   = size,
+        .childSize  = size,
+    };
+
+    for (int i = 0; i < size; i++) {
+        node.attributes[i] = (char*)malloc(sizeof(char) * size);
+        node.value[i]      = (char*)malloc(sizeof(char) * size);
+    }
+}
+
+void freeNode(Node* node) {
+    for (int i = 0; i < node->attrSize; i++)
+        free(node->attributes[i]);
+
+    for (int i = 0; i < node->childSize; i++)
+        free(node->value[i]);
+
+    free(node->attributes);
+    free(node->value);
+}
+
+int attributeResize(Node* node) {
+    if (node->attrCount >= node->attrSize) {
+        node->attrSize   += 5;
+        node->attributes = (char**)realloc(node->attributes, sizeof(char*) * node->attrSize);
+        
+        return node->attributes;
+    }
+
+    return 1;
+}
+
+#endif

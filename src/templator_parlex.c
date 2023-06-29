@@ -60,31 +60,23 @@ void tokenize(Lexer* lexer, Parser* parser) {
         switch (lexer->active) {
             case '<': 
                 token.type = HTML_OPEN;
-                Node node = {
-                    .attributes = (char**)malloc(sizeof(char*) * 5),
-                    .value      = (char**)malloc(sizeof(char*) * 5),
-                    .attrSize   = 5,
-                    .childSize  = 5,
-                };
+                Node node  = defaultNode();
 
                 if (parser->active == NULL) {
+                    /* there is no active node, set current node as active */
                     parser->nodes[parser->position++] = node;
                     parser->active = &node;
                     parser->size++;
                     break;
                 }
 
-                node = (Node) {
-                    .parent     = parser->active,
-                    .isNested   = true,
-                };
+                node.parent   = parser->active;
+                node.isNested = true;
 
                 parser->active->children[parser->active->childCount++] = node;
                 parser->active = &node;
 
-                // free during testing because i know im going to cause troubles otherwise
-                free(node.attributes);
-                free(node.value);
+                freeNode(&node);
 
                 break;
             case '>': token.type = HTML_CLOSE;      break;
@@ -103,17 +95,13 @@ void tokenize(Lexer* lexer, Parser* parser) {
                 scanLiterals(lexer, &token);
 
                 if (!parser->active->hasFinishedDeclaration) {
-                    // strncpy wont work because each char* in node.attributes is not malloc'd
+                    attributeResize(&node);
                     strncpy(node.attributes[node.attrCount++], token.value, token.size);
                 }
         }
 
-        if(lexer->position >= lexer->size) {
-            lexer->size += 50;
-            lexer->token = (Token*)realloc(lexer->token, lexer->size * sizeof(Token));
-            printf("Token* resized to %zu\n", lexer->size);
-        }
-
+        tokenResize(&lexer);
+      
         ungetc(lexer->active, lexer->buffer);
         memcpy(&lexer->token[lexer->position], &token, sizeof(token));
         fflush(stdout);
