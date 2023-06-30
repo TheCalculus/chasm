@@ -13,7 +13,7 @@ file has to be modified */
 #include "../include/rainbow_output.h"
 
 void scanLiterals(Lexer* lexer, Token* token) {
-    if (isalpha(lexer->active)) {
+    if (isalpha(lexer->active)/* || lexer->active == '/' */) {
         char* literal = (char*)malloc(sizeof(char) * 10);
         int      size = 0;
 
@@ -71,19 +71,28 @@ void tokenize(Lexer* lexer, Parser* parser) {
                     break;
                 }
 
-                printf("%s ", token.value);
+                lexer->active = getc(lexer->buffer);
                 scanLiterals(lexer, &token);
-                printf("%s\n", token.value);
+
+                if (*token.value == '<') {
+                    lexer->active = getc(lexer->buffer);
+                    scanLiterals(lexer, &token);
+                }
 
                 if (!strcmp(token.value, parser->active->attributes[0])) {
-                    printf("we're at the ending tag for %s\n", token.value);
-
                     node->parent = parser->active;
                     node->isNested = true;
 
                     parser->active->children[parser->active->childPosition++] = node;
                     parser->active = node;
+
+                    break;
                 }
+
+                printf("ending tag for %s (active %s)\n", token.value, parser->active->attributes[0]);
+
+                (parser->active)->hasFinishedDeclaration = true;
+                parser->active = (parser->active)->parent;
 
                 // freeNode(node);
 
@@ -95,22 +104,12 @@ void tokenize(Lexer* lexer, Parser* parser) {
             case '@': token.type = CHASM_KWD_CAST;  break;
             case '/': 
             {
-                token.type = HTML_CLOSE_CAST; 
-
-                Node* activeNode = parser->active;
-
-                activeNode->hasFinishedDeclaration = true;
-                activeNode = activeNode->parent;
-
                 break;
             }
             case '=': token.type = EQUAL_SIGN;      break;
             default: 
             {
-                printf("%s ", token.value);
                 scanLiterals(lexer, &token);
-                printf("%s\n", token.value);
-
                 Node* activeNode = parser->active;
 
                 if (activeNode != NULL) {
