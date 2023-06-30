@@ -40,6 +40,7 @@ void scanLiterals(Lexer* lexer, Token* token) {
 exit:
         token->value = (char*)realloc(token->value, sizeof(char) * size);
         strcpy(token->value, literal);
+
         if (!isspace(lexer->active))
             ungetc(lexer->active, lexer->buffer);
 
@@ -67,15 +68,22 @@ void tokenize(Lexer* lexer, Parser* parser) {
                 if (parser->active == NULL) {
                     parser->nodes[parser->position++] = *node;
                     parser->active = node;
-                    parser->size++;
                     break;
                 }
 
-                node->parent   = parser->active;
-                node->isNested = true;
+                printf("%s ", token.value);
+                scanLiterals(lexer, &token);
+                printf("%s\n", token.value);
 
-                parser->active->children[parser->active->childCount++] = node; // segfault happens here
-                parser->active = node;
+                if (!strcmp(token.value, parser->active->attributes[0])) {
+                    printf("we're at the ending tag for %s\n", token.value);
+
+                    node->parent = parser->active;
+                    node->isNested = true;
+
+                    parser->active->children[parser->active->childPosition++] = node;
+                    parser->active = node;
+                }
 
                 // freeNode(node);
 
@@ -93,23 +101,27 @@ void tokenize(Lexer* lexer, Parser* parser) {
 
                 activeNode->hasFinishedDeclaration = true;
                 activeNode = activeNode->parent;
-                
+
                 break;
             }
             case '=': token.type = EQUAL_SIGN;      break;
             default: 
             {
+                printf("%s ", token.value);
                 scanLiterals(lexer, &token);
+                printf("%s\n", token.value);
+
                 Node* activeNode = parser->active;
 
-                if (activeNode != NULL)
+                if (activeNode != NULL) {
                     if (!activeNode->hasFinishedDeclaration) {
                         attributeResize(activeNode);
-                        strncpy(activeNode->attributes[activeNode->attrCount++], token.value, 5);
-                        break; // printf("pst-print for %s\n", activeNode->attributes[activeNode->attrCount - 1]);
+                        strncpy(activeNode->attributes[activeNode->attrPosition++], token.value, 5);
                     }
+                    break;
+                }
 
-                // printf("NULL activeNode for '%s'\n", token.value);
+                printf("NULL activeNode for '%s'\n", token.value);
             }
         }
 
@@ -149,6 +161,10 @@ void freeResources(Lexer* lexer) {
     free(lexer);
 }
 
+void freeParser(Parser* parser) {
+
+}
+
 Node* defaultNode() {
     int size = 5;
 
@@ -183,14 +199,14 @@ void freeNode(Node* node) {
 }
 
 void attributeResize(Node* node) {
-    if (node->attrCount >= node->attrSize) {
+    if (node->attrPosition >= node->attrSize) {
         node->attrSize   += 5;
         node->attributes = (char**)realloc(node->attributes, sizeof(char*) * node->attrSize);
         
         for (int i = 0; i < 5; i++)
             node->attributes[node->attrSize - i - 1] = (char*)malloc(sizeof(char) * 5);
        
-        printf("node->attributes (char**) resized to %d\n", node->attrSize);
+        printf("node->attributes (char**) resized to %zu\n", node->attrSize);
     }
 }
 

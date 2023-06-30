@@ -33,7 +33,7 @@ int prepare_input() {
     ungetc(lexer->active, lexer->buffer);
 
     tokenize(lexer, parser); // templator_lexer.c
-    iterateTokens(lexer);    // templator_lexer.c
+    // iterateTokens(lexer);    // templator_lexer.c
     freeResources(lexer);    // templator_lexer.c
 
     return 0;
