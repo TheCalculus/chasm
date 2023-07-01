@@ -13,16 +13,16 @@ file has to be modified */
 #include "../include/rainbow_output.h"
 
 void scanLiterals(Lexer* lexer, Token* token) {
-    if (isalpha(lexer->active)/* || lexer->active == '/' */) {
-        char* literal = (char*)malloc(sizeof(char) * 10);
-        int      size = 0;
+    if (isalpha(lexer->active)) {
+        char* literal = (char*)malloc(sizeof(char) * 11);
+        int size = 0;
 
         do {
             literal[size++] = lexer->active;
             lexer->active = getc(lexer->buffer);
         } while (isalnum(lexer->active) && size < 10);
 
-        literal[++size] = '\0';
+        literal[size] = '\0';
 
         unsigned long hashedLiteral = hash(literal); // templator_lexer.h
 
@@ -38,14 +38,14 @@ void scanLiterals(Lexer* lexer, Token* token) {
         token->type = LITERAL;
 
 exit:
-        token->value = (char*)realloc(token->value, sizeof(char) * size);
+        token->value = (char*)realloc(token->value, sizeof(char) * (size + 1));
         strcpy(token->value, literal);
 
         if (!isspace(lexer->active))
             ungetc(lexer->active, lexer->buffer);
 
         free(literal);
-        token->size  = size;
+        token->size = size;
     }
 }
 
@@ -53,11 +53,11 @@ void tokenize(Lexer* lexer, Parser* parser) {
     while ((lexer->active = getc(lexer->buffer)) != EOF) {
         if (isspace(lexer->active) || !isprint(lexer->active))
             continue;
-        
+
         Token token;
-        token.size  = 1;
+        token.size = 1;
         token.value = (char*)malloc(sizeof(char) * token.size);
-        strcpy(token.value, &lexer->active);
+        token.value[0] = lexer->active;
 
         switch (lexer->active) {
             case '<':
@@ -74,40 +74,44 @@ void tokenize(Lexer* lexer, Parser* parser) {
                 lexer->active = getc(lexer->buffer);
                 scanLiterals(lexer, &token);
 
+                // next character isn't alnum (/)
                 if (*token.value == '<') {
                     lexer->active = getc(lexer->buffer);
                     scanLiterals(lexer, &token);
                 }
 
-                if (!strcmp(token.value, parser->active->attributes[0])) {
+                for (int i = token.size; i >= 0; i--)
+                    ungetc(token.value[i], lexer->buffer);
+
+                if (strncmp(token.value, parser->active->attributes[0], token.size) == 0) {
+                    printf("'%s' == '%s' (end tag found)\n", token.value, parser->active->attributes[0]);
+
+                    parser->active->hasFinishedDeclaration = true;
+                    parser->active = parser->active->parent;
+                } else {
                     node->parent = parser->active;
                     node->isNested = true;
 
                     parser->active->children[parser->active->childPosition++] = node;
                     parser->active = node;
 
-                    break;
+//                  printf("'%s' != '%s' (not end tag)\n", token.value, parser->active->attributes[0]);
                 }
 
-                printf("ending tag for %s (active %s)\n", token.value, parser->active->attributes[0]);
-
-                (parser->active)->hasFinishedDeclaration = true;
-                parser->active = (parser->active)->parent;
-
-                // freeNode(node);
+//              freeNode(node);
 
                 break;
             }
-            case '>': token.type = HTML_CLOSE;      break;
-            case '{': token.type = LEFT_BRACE;      break;
-            case '}': token.type = RIGHT_BRACE;     break;
-            case '@': token.type = CHASM_KWD_CAST;  break;
-            case '/': 
+            case '>': token.type = HTML_CLOSE; break;
+            case '{': token.type = LEFT_BRACE; break;
+            case '}': token.type = RIGHT_BRACE; break;
+            case '@': token.type = CHASM_KWD_CAST; break;
+            case '/':
             {
                 break;
             }
-            case '=': token.type = EQUAL_SIGN;      break;
-            default: 
+            case '=': token.type = EQUAL_SIGN; break;
+            default:
             {
                 scanLiterals(lexer, &token);
                 Node* activeNode = parser->active;
@@ -120,12 +124,12 @@ void tokenize(Lexer* lexer, Parser* parser) {
                     break;
                 }
 
-                printf("NULL activeNode for '%s'\n", token.value);
+                // printf("NULL activeNode for '%s'\n", token.value);
             }
         }
 
         tokenResize(lexer);
-      
+
         ungetc(lexer->active, lexer->buffer);
         memcpy(&lexer->token[lexer->position], &token, sizeof(token));
 
@@ -138,7 +142,7 @@ void tokenize(Lexer* lexer, Parser* parser) {
 
 void tokenResize(Lexer* lexer) {
     if (lexer->position >= lexer->size) {
-        lexer->size  += 50;
+        lexer->size += 50;
         lexer->token = (Token*)realloc(lexer->token, sizeof(Token) * lexer->size);
         printf("Token* resized to %zu\n", lexer->size);
     }
@@ -149,14 +153,14 @@ void iterateTokens(Lexer* lexer) {
     int index = 0;
     while (lexer->token[index].type != END_OF_FILE && index <= 1000) {
         printf("%-10s %-10s\n", lexer->token[index].value,
-                token_reps[lexer->token[index].type]);
+            token_reps[lexer->token[index].type]);
         index++;
     }
 }
 
 void freeResources(Lexer* lexer) {
     fclose(lexer->buffer);
-    free(lexer->token); 
+    free(lexer->token);
     free(lexer);
 }
 
@@ -168,19 +172,19 @@ Node* defaultNode() {
     int size = 5;
 
     Node* node = (Node*)malloc(sizeof(Node));
-    
+
     node->attributes = (char**)malloc(sizeof(char*) * size);
-    node->value      = (char**)malloc(sizeof(char*) * size);
-    node->children   = (Node**)malloc(sizeof(Node*) * size); /* constant, max 5 children for debug */
-    node->attrSize   = size;
-    node->childSize  = size;
-    node->isNested   = false;
+    node->value = (char**)malloc(sizeof(char*) * size);
+    node->children = (Node**)malloc(sizeof(Node*) * size); /* constant, max 5 children for debug */
+    node->attrSize = size;
+    node->childSize = size;
+    node->isNested = false;
     node->hasFinishedDeclaration = false;
 
     for (int i = 0; i < size; i++) {
         node->attributes[i] = (char*)malloc(sizeof(char) * size);
-        node->value[i]      = (char*)malloc(sizeof(char) * size);
-        node->children[i]   = (Node*)malloc(sizeof(Node));
+        node->value[i] = (char*)malloc(sizeof(char) * size);
+        node->children[i] = (Node*)malloc(sizeof(Node));
     }
 
     return node;
@@ -195,16 +199,17 @@ void freeNode(Node* node) {
 
     free(node->attributes);
     free(node->value);
+    free(node);
 }
 
 void attributeResize(Node* node) {
     if (node->attrPosition >= node->attrSize) {
-        node->attrSize   += 5;
+        node->attrSize += 5;
         node->attributes = (char**)realloc(node->attributes, sizeof(char*) * node->attrSize);
-        
-        for (int i = 0; i < 5; i++)
-            node->attributes[node->attrSize - i - 1] = (char*)malloc(sizeof(char) * 5);
-       
+
+        for (int i = node->attrSize - 5; i < node->attrSize; i++)
+            node->attributes[i] = (char*)malloc(sizeof(char) * 5);
+
         printf("node->attributes (char**) resized to %zu\n", node->attrSize);
     }
 }
