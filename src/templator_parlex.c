@@ -80,6 +80,7 @@ void tokenize(Lexer* lexer, Parser* parser) {
                     scanLiterals(lexer, &token);
                 }
 
+                // scanLiterals causes the lexer->position to increase by token.size
                 for (int i = token.size; i >= 0; i--)
                     ungetc(token.value[i], lexer->buffer);
 
@@ -94,11 +95,7 @@ void tokenize(Lexer* lexer, Parser* parser) {
 
                     parser->active->children[parser->active->childPosition++] = node;
                     parser->active = node;
-
-//                  printf("'%s' != '%s' (not end tag)\n", token.value, parser->active->attributes[0]);
                 }
-
-//              freeNode(node);
 
                 break;
             }
@@ -106,21 +103,15 @@ void tokenize(Lexer* lexer, Parser* parser) {
             case '{': token.type = LEFT_BRACE; break;
             case '}': token.type = RIGHT_BRACE; break;
             case '@': token.type = CHASM_KWD_CAST; break;
-            case '/':
-            {
-                break;
-            }
             case '=': token.type = EQUAL_SIGN; break;
             default:
             {
                 scanLiterals(lexer, &token);
                 Node* activeNode = parser->active;
 
-                if (activeNode != NULL) {
-                    if (!activeNode->hasFinishedDeclaration) {
-                        attributeResize(activeNode);
-                        strncpy(activeNode->attributes[activeNode->attrPosition++], token.value, 5);
-                    }
+                if (activeNode != NULL && !activeNode->hasFinishedDeclaration) {
+                    attributeResize(activeNode);
+                    strncpy(activeNode->attributes[activeNode->attrPosition++], token.value, 5);
                     break;
                 }
 
