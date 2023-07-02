@@ -10,17 +10,15 @@
 char* token_reps[END_OF_FILE + 1] = {
     "CHASM_KWD_CAST", "CHASM_KWD_LOOP",  "CHASM_KWD_IF", "LITERAL",
     "VARIABLE",       "LEFT_BRACE",      "RIGHT_BRACE",  "HTML_OPEN",
-    "HTML_CLOSE",     "HTML_CLOSE_CAST", "EQUAL_SIGN", "END_OF_FILE",
+    "HTML_CLOSE",     "HTML_CLOSE_CAST", "EQUAL_SIGN",   "END_OF_FILE",
 };
 
 int prepare_input() {
-    Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
-    lexer->size  = INITIAL_SIZE;
-    lexer->token = (Token*)malloc(sizeof(Token) * lexer->size);
+    Lexer*  lexer  = malloc(sizeof(Lexer));
+    Parser* parser = malloc(sizeof(Parser));
 
-    Parser* parser = (Parser*)malloc(sizeof(Parser));
-    parser->size   = INITIAL_SIZE;
-    parser->nodes  = (Node*)malloc(sizeof(Node) * parser->size);
+    *lexer  = (Lexer)  {.size = LEXER_INITIAL_SIZE,  .token = malloc(sizeof(Token) * lexer->size)};
+    *parser = (Parser) {.size = PARSER_INITIAL_SIZE, .nodes = malloc(sizeof(Node)  * parser->size)};
 
     if ((lexer->buffer = fopen("chasm.ch", "r")) == NULL) {
         perror(RED "error opening file");
@@ -32,9 +30,10 @@ int prepare_input() {
     lexer->active = fgetc(lexer->buffer);
     ungetc(lexer->active, lexer->buffer);
 
-    tokenize(lexer, parser); // templator_lexer.c
-    // iterateTokens(lexer);    // templator_lexer.c
-    freeResources(lexer);    // templator_lexer.c
+    tokenize(lexer, parser); // templator_parlex.c
+    iterateTokens(lexer);    // templator_parlex.c
+    freeLexer(lexer);        // templator_parlex.c
+    freeParser(parser);      // templator_parlex.c
 
     return 0;
 }

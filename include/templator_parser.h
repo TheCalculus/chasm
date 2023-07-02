@@ -1,6 +1,8 @@
 #ifndef TEMPLATOR_PARSER_H
 #define TEMPLATOR_PARSER_H
 
+#define PARSER_INITIAL_SIZE 25
+
 #include <stdbool.h>
 
 typedef enum {

@@ -4,7 +4,7 @@
 #define NUM_KEYWORDS 5
 #define KWDHASH_LOOP 6385446751 /* equivalent to hash("loop") */
 #define KWDHASH_IF   5863476    /* equivalent to hash("if")   */
-#define INITIAL_SIZE 25
+#define LEXER_INITIAL_SIZE 25
 
 #include "stdio.h"
 #include "stdlib.h"
@@ -41,6 +41,6 @@ typedef struct {
 void tokenResize  (Lexer* lexer);
 void tokenize     (Lexer* lexer, Parser* parser);
 void iterateTokens(Lexer* lexer);
-void freeResources(Lexer* lexer);
+void freeLexer(Lexer* lexer);
 
 #endif
