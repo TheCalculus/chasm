@@ -162,14 +162,26 @@ void freeLexer(Lexer* lexer) {
     lexer = NULL;
 }
 
-// causes SIGABRT
-
 void freeParser(Parser* parser) {
     for (int i = 0; i < parser->position; i++) {
+        int attrSize = parser->nodes[i].attrSize;
+        int childSize = parser->nodes[i].childSize;
+
+        for (int j = 0; j < attrSize; j++) {
+            free(parser->nodes[i].attributes[j]);
+            free(parser->nodes[i].value[j]);
+        }
+
         free(parser->nodes[i].attributes);
         free(parser->nodes[i].value);
+
+        for (int j = 0; j < childSize; j++) {
+            free(parser->nodes[i].children[j]);
+        }
+
+        free(parser->nodes[i].children);
     }
-    
+
     free(parser->nodes);
     free(parser);
 }
