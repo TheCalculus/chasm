@@ -27,11 +27,12 @@ int prepare_input() {
 
     printf(GRN "file opened\n" RESET);
 
+    fflush(stdout); // flush stdout for correct colouring in case of errors following this point
     lexer->active = fgetc(lexer->buffer);
     ungetc(lexer->active, lexer->buffer);
 
-    tokenize(lexer, parser); // templator_parlex.c
-    iterateTokens(lexer);    // templator_parlex.c
+    parse(lexer, parser); // templator_parlex.c
+    // iterateTokens(lexer);    // templator_parlex.c
     freeLexer(lexer);        // templator_parlex.c
     freeParser(parser);      // templator_parlex.c
 

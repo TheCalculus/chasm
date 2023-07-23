@@ -1,6 +1,3 @@
-/* templator_lexer.c reset
-file has to be modified */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,22 +46,14 @@ exit:
     }
 }
 
-void tokenize(Lexer* lexer, Parser* parser) {
+void parse(Lexer* lexer, Parser* parser) {
     while ((lexer->active = getc(lexer->buffer)) != EOF) {
         if (isspace(lexer->active) || !isprint(lexer->active))
             continue;
 
-        Token token = {
-            .size = 1,
-            .value = (char*)malloc(sizeof(char)),
-        };
-
-        token.value[0] = lexer->active;
-
         switch (lexer->active) {
             case '<':
             {
-                token.type = HTML_OPEN;
                 Node* node = defaultNode();
 
                 if (parser->active == NULL) {
@@ -106,14 +95,15 @@ void tokenize(Lexer* lexer, Parser* parser) {
 
                 break;
             }
-            case '>': token.type = HTML_CLOSE; break;
-            case '{': token.type = LEFT_BRACE; break;
-            case '}': token.type = RIGHT_BRACE; break;
-            case '@': token.type = CHASM_KWD_CAST; break;
-            case '=': token.type = EQUAL_SIGN; break;
-            case '/': token.type = HTML_CLOSE_CAST; break;
+            case '>': break;
+            case '{': break;
+            case '}': break;
+            case '@': break;
+            case '=': break;
+            case '/': break;
             default:
             {
+                Token token;
                 scanLiterals(lexer, &token);
                 Node* activeNode = parser->active;
 
@@ -127,7 +117,7 @@ void tokenize(Lexer* lexer, Parser* parser) {
         tokenResize(lexer);
 
         ungetc(lexer->active, lexer->buffer);
-        memcpy(&lexer->token[lexer->position], &token, sizeof(token));
+        // memcpy(&lexer->token[lexer->position], &token, sizeof(token));
 
         lexer->active = getc(lexer->buffer);
         lexer->position++;

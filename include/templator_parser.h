@@ -32,8 +32,8 @@ typedef struct {
 } Parser;
 
 Node* defaultNode();
-void  freeNode       (Node* node);
-void  freeParser     (Parser* parser);
+void  freeNode(Node* node);
+void  freeParser(Parser* parser);
 void  attributeResize(Node* node);
 
 #endif

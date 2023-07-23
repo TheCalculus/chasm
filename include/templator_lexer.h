@@ -38,8 +38,8 @@ typedef struct {
     size_t position;   /* current position in token sequence */
 } Lexer;
 
-void tokenResize  (Lexer* lexer);
-void tokenize     (Lexer* lexer, Parser* parser);
+void tokenResize(Lexer* lexer);
+void parse(Lexer* lexer, Parser* parser);
 void iterateTokens(Lexer* lexer);
 void freeLexer(Lexer* lexer);
 
