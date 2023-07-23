@@ -156,40 +156,34 @@ void freeLexer(Lexer* lexer) {
     lexer = NULL;
 }
 
-void freeParser(Parser* parser) {
-    for (int i = 0; i < parser->position; i++) {
-        int attrSize = parser->nodes[i].attrSize;
-        int childSize = parser->nodes[i].childSize;
+void freeNode(Node* node) {
+    if (node == NULL)
+        return;
 
-        for (int j = 0; j < attrSize; j++) {
-            free(parser->nodes[i].attributes[j]);
-            free(parser->nodes[i].value[j]);
-        }
-
-        free(parser->nodes[i].attributes);
-        free(parser->nodes[i].value);
-
-        for (int j = 0; j < childSize; j++) {
-            free(parser->nodes[i].children[j]);
-        }
-
-        free(parser->nodes[i].children);
+    for (size_t i = 0; i < node->attrPosition; i++) {
+        free(node->attributes[i]);
+        free(node->value[i]);
     }
 
-    free(parser->nodes);
-    free(parser);
-}
+    if (node->isNested) {
+        for (size_t i = 0; i < node->childPosition; i++)
+            freeNode(node->children[i]);
 
-void freeNode(Node* node) {
-    for (int i = 0; i < node->attrSize; i++)
-        free(node->attributes[i]);
+        free(node->children);
+    }
 
-    for (int i = 0; i < node->childSize; i++)
-        free(node->value[i]);
-
-    free(node->attributes);
     free(node->value);
     free(node);
+}
+
+void freeParser(Parser* parser) {
+    if (parser == NULL)
+        return;
+
+    for (size_t i = 0; i < parser->position; i++)
+        freeNode(&parser->nodes[i]);
+
+    free(parser);
 }
 
 Node* defaultNode() {
