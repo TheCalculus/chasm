@@ -103,7 +103,11 @@ void parse(Lexer* lexer, Parser* parser) {
             case '/': break;
             default:
             {
-                Token token;
+                Token token = {
+                    .size  = 1,
+                    .value = (char*)malloc(sizeof(char) * 1),
+                };
+                
                 scanLiterals(lexer, &token);
                 Node* activeNode = parser->active;
 

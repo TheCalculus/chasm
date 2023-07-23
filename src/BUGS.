@@ -1,0 +1,22 @@
+------------------------------------------------------------
+bug 1 (error occuring somewhere after calling parse)
+
+stack trace (lldb)
+    * thread #1, queue = 'com.apple.main-thread', stop reason = signal SIGABRT
+    * frame #0: 0x0000000186434724 libsystem_kernel.dylib`__pthread_kill + 8
+    frame #1: 0x000000018646bc28 libsystem_pthread.dylib`pthread_kill + 288
+    frame #2: 0x0000000186379ae8 libsystem_c.dylib`abort + 180
+    frame #3: 0x000000018629ae28 libsystem_malloc.dylib`malloc_vreport + 908
+    frame #4: 0x000000018629e6e8 libsystem_malloc.dylib`malloc_report + 64
+    frame #5: 0x000000018628f0d4 libsystem_malloc.dylib`realloc + 328
+    frame #6: 0x0000000100002e08 chasm`scanLiterals(lexer=0x0000600000c04000, token=0x000000016fdff130) at templator_parlex.c:38:31
+    frame #7: 0x000000010000320c chasm`parse(lexer=0x0000600000c04000, parser=0x0000600000204100) at templator_parlex.c:107:17
+    frame #8: 0x0000000100002c40 chasm`prepare_input at chasm.c:34:5
+    frame #9: 0x0000000100002c88 chasm`main at chasm.c:44:12
+    frame #10: 0x0000000186113f28 dyld`start + 2236
+
+scanLiterals might be causing the problem somehow
+
+it seems the error is being caused by reallocation of token->value
+token->value wasn't malloc'ed when the transition from using tokenizer elements began
+------------------------------------------------------------
