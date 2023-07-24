@@ -45,7 +45,7 @@ int webserver() {
         char* header   = "HTTP/1.1 200 OK\r\n"
                          "Content-Type: text/html\r\n"
                          "\r\n";
-        char* content  = "<h1>Hello World!</h1>"; // todo: write templator to handle content
+        char* content  = "<h1>Hello World!</h1>";
         char* response = malloc(strlen(header) + strlen(content) + 1);
        
         strcpy(response, header);

@@ -1,5 +1,12 @@
+# remove vscode, .out junk and build
 build/
 .vscode/
+*.out
+
+# remove those pesky ds_stores
 src/.DS_STORE
 .DS_STORE
-*.out
+
+# remove deprecated files
+src/templator_lexer.c
+src/templator_parser.c
