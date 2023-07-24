@@ -5,6 +5,8 @@ status | description | identifier
 - [ ] make server multithreaded and more robust to support more than one user securely (or use a library to do this)  
 - [ ] make it possible for chasm to work with any server (it just needs to be told when and where changes occur)
 - [ ] remove reliance on tokenizer elements (Token) in templator_parlex.c  
+- [ ] write parser `nodetree to HTML` converter
+- [ ] implement reactivity and functionality to update only nodes that are directly effected by a change
 
 # BUGS
 status | title | identifier  

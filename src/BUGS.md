@@ -73,4 +73,5 @@ error was originating due to free'ing node->attributes, probably because each el
 this time it occured in freeParser, probably because parser->nodes was free'd. each individual node had been free'd within nodes, so there was no need to free this.  
 suspicion was proven right. bug resolved #3d98d3e  
 ------------------------------------------------------------ (resolved, see #3d98d3e)  
-
+## (24/07/23) `parse` in `templator_parlex.c` has been renamed to generateNodeTree to better match its purpose  
+------------------------------------------------------------

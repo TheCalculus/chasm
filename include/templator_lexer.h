@@ -39,7 +39,7 @@ typedef struct {
 } Lexer;
 
 void tokenResize(Lexer* lexer);
-void parse(Lexer* lexer, Parser* parser);
+void generateNodeTree(Lexer* lexer, Parser* parser);
 void iterateTokens(Lexer* lexer);
 void freeLexer(Lexer* lexer);
 

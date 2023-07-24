@@ -7,6 +7,8 @@
 #include "../include/templator_parser.h"
 #include "../include/rainbow_output.h"
 
+#include "../include/server.h"
+
 char* token_reps[END_OF_FILE + 1] = {
     "CHASM_KWD_CAST", "CHASM_KWD_LOOP",  "CHASM_KWD_IF", "LITERAL",
     "VARIABLE",       "LEFT_BRACE",      "RIGHT_BRACE",  "HTML_OPEN",
@@ -31,7 +33,7 @@ int prepare_input() {
     lexer->active = fgetc(lexer->buffer);
     ungetc(lexer->active, lexer->buffer);
 
-    parse(lexer, parser); // templator_parlex.c
+    generateNodeTree(lexer, parser); // templator_parlex.c
     // iterateTokens(lexer);    // templator_parlex.c
     freeLexer(lexer);        // templator_parlex.c
     freeParser(parser);      // templator_parlex.c
@@ -41,5 +43,6 @@ int prepare_input() {
 
 int main() {
     printf(GRN "chasm.c copies\n" RESET);
+    webserver();
     return prepare_input();
 }

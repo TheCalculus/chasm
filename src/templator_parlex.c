@@ -46,7 +46,7 @@ exit:
     }
 }
 
-void parse(Lexer* lexer, Parser* parser) {
+void generateNodeTree(Lexer* lexer, Parser* parser) {
     while ((lexer->active = getc(lexer->buffer)) != EOF) {
         if (isspace(lexer->active) || !isprint(lexer->active))
             continue;
