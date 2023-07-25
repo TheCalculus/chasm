@@ -220,21 +220,23 @@ void attributeResize(Node* node) {
     }
 }
 
+char* strcat_steroids(char* dest, char* src) {
+    while (*dest) dest++;
+    while ((*dest++ = *src++))
+        ;
+
+    return --dest;
+}
+
 char* parseTreeToHTML(Parser* parser, size_t* out, size_t init) {
     char* buffer = malloc(sizeof(char) * init);
 
-    for (int i = 0; i < parser->position;) {
+    for (int i = 0; i < parser->position; i++) {
         Node node = parser->nodes[i];
 
-        char*  element = strcat(node.attributes, node.children);
-        size_t size    = node.attrSize + 
-                         node.childSize; // size does not represent the precise size of either buffer
-                                         // in the worst case, you could be allocating an additional
-                                         // 9 char's for no reason
-
-        memset(&buffer[i], strcat(node.attributes, node.children), size);
-
-        i += size;
+        char* elementAttributes = (char*)malloc(sizeof(char) * 100);
+        for (size_t i = 0; i < node.attrPosition; i++)
+            printf("%s\n", node.attributes[i]);
     }
 
     return buffer;

@@ -28,7 +28,8 @@ status | title | identifier
         node->attributes (char**) resized to 15  
         build_run.sh: line 14: 31411 Segmentation fault: 11  ./chasm  
     ```
-
+- [ ] parseTreeToHTML not iterating through node sequence correctly (4)
+    read #4 in BUGS.md
 - [ ] bug where iterateTokens reads values incorrectly and tokens as (null) but only within a few iterations (2)  
     resolve iterateTokens bug where tokens are not being correctly outputted.   
     probably an issue related to memory.  

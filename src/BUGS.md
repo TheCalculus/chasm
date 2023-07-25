@@ -75,3 +75,7 @@ suspicion was proven right. bug resolved #3d98d3e
 ------------------------------------------------------------ (resolved, see #3d98d3e)  
 ## (24/07/23) `parse` in `templator_parlex.c` has been renamed to generateNodeTree to better match its purpose  
 ------------------------------------------------------------
+bug 4 (parseTreeToHTML not iterating through node sequence correctly)
+the cause of this bug is pretty obvious, as the node sequence is a tree-like structure
+rather than a one-dimensional list. since there is always garaunteed to be only one root node
+(html), iterating through each "node" results in only 1 iteration

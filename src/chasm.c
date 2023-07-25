@@ -37,7 +37,11 @@ int prepare_input() {
     lexer->active = fgetc(lexer->buffer);
     ungetc(lexer->active, lexer->buffer);
 
+    size_t out;
+    
     generateNodeTree(lexer, parser); // templator_parlex.c
+    parseTreeToHTML(parser, &out, lexer->bufsiz);
+
     // iterateTokens(lexer);    // templator_parlex.c
     freeLexer(lexer);        // templator_parlex.c
     freeParser(parser);      // templator_parlex.c
@@ -47,6 +51,6 @@ int prepare_input() {
 
 int main() {
     printf(GRN "chasm.c copies\n" RESET);
-    webserver();
+    // webserver();
     return prepare_input();
 }
