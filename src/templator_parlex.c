@@ -143,7 +143,7 @@ void iterateTokens(Lexer* lexer) {
     int index = 0;
     while (lexer->token[index].type != END_OF_FILE && index <= 1000) {
         printf("%-10s %-10s\n", lexer->token[index].value,
-            token_reps[lexer->token[index].type]);
+                token_reps[lexer->token[index].type]);
         index++;
     }
 }
@@ -219,6 +219,26 @@ void attributeResize(Node* node) {
         printf("node->attributes (char**) resized to %zu\n", node->attrSize);
     }
 }
+
+char* parseTreeToHTML(Parser* parser, size_t* out, size_t init) {
+    char* buffer = malloc(sizeof(char) * init);
+
+    for (int i = 0; i < parser->position;) {
+        Node node = parser->nodes[i];
+
+        char*  element = strcat(node.attributes, node.children);
+        size_t size    = node.attrSize + 
+                         node.childSize; // size does not represent the precise size of either buffer
+                                         // in the worst case, you could be allocating an additional
+                                         // 9 char's for no reason
+
+        memset(&buffer[i], strcat(node.attributes, node.children), size);
+
+        i += size;
+    }
+
+    return buffer;
+};
 
 unsigned long hash(const char* str) {
     unsigned long hash = 5381;

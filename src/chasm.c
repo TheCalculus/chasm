@@ -27,6 +27,10 @@ int prepare_input() {
         return 1;
     }
 
+    fseek(lexer->buffer, 0, SEEK_END);
+    lexer->bufsiz = ftell(lexer->buffer);
+    fseek(lexer->buffer, 0, SEEK_SET);
+
     printf(GRN "file opened\n" RESET);
 
     fflush(stdout); // flush stdout for correct colouring in case of errors following this point

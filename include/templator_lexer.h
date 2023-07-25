@@ -36,6 +36,7 @@ typedef struct {
     Token* token;      /* token sequence outputted from lexer */
     size_t size;       /* current size of token sequence */
     size_t position;   /* current position in token sequence */
+    size_t bufsiz;     /* size of buffer */
 } Lexer;
 
 void tokenResize(Lexer* lexer);
