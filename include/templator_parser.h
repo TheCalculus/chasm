@@ -35,6 +35,6 @@ Node* defaultNode();
 void  freeNode(Node* node);
 void  freeParser(Parser* parser);
 void  attributeResize(Node* node);
-char* parseTreeToHTML(Parser* parser, size_t* out, size_t init);
+char* parseTreeToHTML(Node* node, size_t* out, size_t init);
 
 #endif

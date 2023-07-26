@@ -228,18 +228,15 @@ char* strcat_steroids(char* dest, char* src) {
     return --dest;
 }
 
-char* parseTreeToHTML(Parser* parser, size_t* out, size_t init) {
-    char* buffer = malloc(sizeof(char) * init);
+char* parseTreeToHTML(Node* node, size_t* out, size_t init) {
+    for (size_t i = 0; i < node->attrPosition; i++)
+        printf("attribute[%zu]: %s\n", i, node->attributes[i]);
 
-    for (int i = 0; i < parser->position; i++) {
-        Node node = parser->nodes[i];
-
-        char* elementAttributes = (char*)malloc(sizeof(char) * 100);
-        for (size_t i = 0; i < node.attrPosition; i++)
-            printf("%s\n", node.attributes[i]);
-    }
-
-    return buffer;
+    if (node->childSize > 0)
+        for (size_t i = 0; i < node->childSize; i++)
+            parseTreeToHTML(node->children[i], out, init);
+    
+    return "ooga booga";
 };
 
 unsigned long hash(const char* str) {

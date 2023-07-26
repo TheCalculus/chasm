@@ -40,9 +40,9 @@ int prepare_input() {
     size_t out;
     
     generateNodeTree(lexer, parser); // templator_parlex.c
-    parseTreeToHTML(parser, &out, lexer->bufsiz);
+    parseTreeToHTML(&parser->nodes[0], &out, lexer->bufsiz);
 
-    // iterateTokens(lexer);    // templator_parlex.c
+    // iterateTokens(lexer); // templator_parlex.c
     freeLexer(lexer);        // templator_parlex.c
     freeParser(parser);      // templator_parlex.c
 
