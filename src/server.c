@@ -5,9 +5,13 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#include "../include/templator_parser.h"
+
 #define IP_ADDR "127.0.0.1"
 #define PORT    8888
 #define MAX_BUFFER_SIZE 2048
+
+int socket_fd = 0;
 
 void error(int expression, char* err) {
     if (expression >= 0) return;
@@ -15,7 +19,7 @@ void error(int expression, char* err) {
     exit(1);
 }
 
-void handleClient(int client_fd) {
+void handleClient(int client_fd, Parser* parser) {
     char buffer[MAX_BUFFER_SIZE];
 
     int bytesRecv = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
@@ -28,7 +32,9 @@ void handleClient(int client_fd) {
     const char* header = "HTTP/1.1 200 OK\r\n"
                          "Content-Type: text/html\r\n"
                          "\r\n";
-    const char* content = "<h1>Hello World!</h1>";
+    // const char* content = "<h1>Hello World!</h1>";
+    size_t out;
+    const char* content = parseTreeToHTML(&parser->nodes[0], &out, 1024);
 
     char response[MAX_BUFFER_SIZE];
     snprintf(response, sizeof(response), "%s%s", header, content);
@@ -40,8 +46,14 @@ void handleClient(int client_fd) {
     close(client_fd);
 }
 
-int webserver() {
-    int socket_fd, client_fd;
+void signalHandler(int signum) {
+    printf("socket interrupted\n");
+    close(socket_fd);
+    exit(signum);
+}
+
+int webserver(Parser* parser) {
+    int client_fd;
     struct sockaddr_in server, client;
 
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -57,12 +69,14 @@ int webserver() {
 
     printf("server is listening on %s:%d\n", IP_ADDR, PORT);
 
+    signal(SIGINT, signalHandler);
+
     while (1) {
         socklen_t c = sizeof(client);
         client_fd = accept(socket_fd, (struct sockaddr*)&client, &c);
         error(client_fd, "accept failed");
 
-        handleClient(client_fd);
+        handleClient(client_fd, parser);
     }
 
     close(socket_fd);

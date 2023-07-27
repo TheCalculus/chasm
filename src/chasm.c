@@ -15,9 +15,12 @@ char* token_reps[END_OF_FILE + 1] = {
     "HTML_CLOSE",     "HTML_CLOSE_CAST", "EQUAL_SIGN",   "END_OF_FILE",
 };
 
+Lexer*  lexer;
+Parser* parser;
+
 int prepare_input() {
-    Lexer*  lexer  = malloc(sizeof(Lexer));
-    Parser* parser = malloc(sizeof(Parser));
+    lexer  = malloc(sizeof(Lexer));
+    parser = malloc(sizeof(Parser));
 
     *lexer  = (Lexer)  {.size = LEXER_INITIAL_SIZE,  .token = malloc(sizeof(Token) * lexer->size)};
     *parser = (Parser) {.size = PARSER_INITIAL_SIZE, .nodes = malloc(sizeof(Node)  * parser->size)};
@@ -51,6 +54,6 @@ int prepare_input() {
 
 int main() {
     printf(GRN "chasm.c copies\n" RESET);
-    // webserver();
-    return prepare_input();
+    prepare_input();
+    webserver(parser);
 }

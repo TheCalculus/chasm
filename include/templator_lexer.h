@@ -39,9 +39,9 @@ typedef struct {
     size_t bufsiz;     /* size of buffer */
 } Lexer;
 
-void tokenResize(Lexer* lexer);
 void generateNodeTree(Lexer* lexer, Parser* parser);
 void iterateTokens(Lexer* lexer);
 void freeLexer(Lexer* lexer);
+void tokenResize(Lexer* lexer);
 
 #endif

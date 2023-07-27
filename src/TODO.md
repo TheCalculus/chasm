@@ -7,6 +7,7 @@ status | description | identifier
 - [ ] remove reliance on tokenizer elements (Token) in templator_parlex.c  
 - [ ] write parser `nodetree to HTML` converter
 - [ ] implement reactivity and functionality to update only nodes that are directly effected by a change
+- [ ] remove hash function from tokenizer in `templator_parlex.c`
 
 # BUGS
 status | title | identifier  

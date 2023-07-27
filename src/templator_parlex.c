@@ -10,7 +10,7 @@
 #include "../include/rainbow_output.h"
 
 void scanLiterals(Lexer* lexer, Token* token) {
-    if (isalpha(lexer->active)) {
+    if (isprint(lexer->active)) {
         char* literal = (char*)malloc(sizeof(char) * 11);
         int size = 0;
 
@@ -130,14 +130,6 @@ void generateNodeTree(Lexer* lexer, Parser* parser) {
     lexer->token[lexer->position++] = (Token) { END_OF_FILE, "", 1 };
 }
 
-void tokenResize(Lexer* lexer) {
-    if (lexer->position >= lexer->size) {
-        lexer->size += 50;
-        lexer->token = (Token*)realloc(lexer->token, sizeof(Token) * lexer->size);
-        printf("Token* resized to %zu\n", lexer->size);
-    }
-}
-
 void iterateTokens(Lexer* lexer) {
     printf(GRN "beginning token iteration\n" RESET);
     int index = 0;
@@ -208,6 +200,14 @@ Node* defaultNode() {
     return node;
 }
 
+void tokenResize(Lexer* lexer) {
+    if (lexer->position >= lexer->size) {
+        lexer->size += 50;
+        lexer->token = (Token*)realloc(lexer->token, sizeof(Token) * lexer->size);
+        printf("Token* resized to %zu\n", lexer->size);
+    }
+}
+
 void attributeResize(Node* node) {
     if (node->attrPosition >= node->attrSize) {
         node->attrSize += 5;
@@ -229,15 +229,27 @@ char* strcat_steroids(char* dest, char* src) {
 }
 
 char* parseTreeToHTML(Node* node, size_t* out, size_t init) {
-    for (size_t i = 0; i < node->attrPosition; i++)
-        printf("attribute[%zu]: %s\n", i, node->attributes[i]);
+    size_t buffer_size = 1024;
+    char* buffer = (char*)malloc(buffer_size);
 
-    if (node->childSize > 0)
-        for (size_t i = 0; i < node->childSize; i++)
-            parseTreeToHTML(node->children[i], out, init);
-    
-    return "ooga booga";
-};
+    buffer[0] = '\0';
+
+    for (size_t i = 0; i < node->attrPosition; i++) {
+        // concatenate each attribute to the buffer
+        buffer = strcat_steroids(buffer, node->attributes[i]);
+    }
+
+    if (node->childSize > 0) {
+        for (size_t i = 0; i < node->childSize; i++) {
+            // recursively concatenate child nodes to the buffer
+            buffer = parseTreeToHTML(node->children[i], out, init);
+        }
+    }
+
+    *out += strlen(buffer);
+
+    return buffer;
+}
 
 unsigned long hash(const char* str) {
     unsigned long hash = 5381;

@@ -2,7 +2,7 @@
 #define SERVER_H
 
 void error(int expression, char* err);
-void handleClient(int client_fd);
-int  webserver();
+void handleClient(int client_fd, Parser* parser);
+int  webserver(Parser* parser);
 
 #endif

@@ -31,9 +31,9 @@ typedef struct {
     size_t position; /* current position in node sequence */
 } Parser;
 
-Node* defaultNode();
 void  freeNode(Node* node);
 void  freeParser(Parser* parser);
+Node* defaultNode();
 void  attributeResize(Node* node);
 char* parseTreeToHTML(Node* node, size_t* out, size_t init);
 
