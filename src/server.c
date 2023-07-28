@@ -8,7 +8,7 @@
 #include "../include/templator_parser.h"
 
 #define IP_ADDR "127.0.0.1"
-#define PORT    8888
+#define PORT    6969
 #define MAX_BUFFER_SIZE 2048
 
 int socket_fd = 0;
@@ -32,9 +32,9 @@ void handleClient(int client_fd, Parser* parser) {
     const char* header = "HTTP/1.1 200 OK\r\n"
                          "Content-Type: text/html\r\n"
                          "\r\n";
-    // const char* content = "<h1>Hello World!</h1>";
+    const char* content = "<h1>Hello World!</h1>";
     size_t out;
-    const char* content = parseTreeToHTML(&parser->nodes[0], &out, 1024);
+    // const char* content = parseTreeToHTML(&parser->nodes[0], &out, 1024);
 
     char response[MAX_BUFFER_SIZE];
     snprintf(response, sizeof(response), "%s%s", header, content);

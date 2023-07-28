@@ -21,7 +21,7 @@ void scanLiterals(Lexer* lexer, Token* token) {
 
         literal[size] = '\0';
 
-        unsigned long hashedLiteral = hash(literal); // templator_lexer.h
+        unsigned long hashedLiteral = hash(literal);
 
         switch (hashedLiteral) {
             case KWDHASH_LOOP:
@@ -34,11 +34,11 @@ void scanLiterals(Lexer* lexer, Token* token) {
 
         token->type = LITERAL;
 
-exit:
+    exit:
         token->value = (char*)realloc(token->value, sizeof(char) * (size + 1));
         strcpy(token->value, literal);
 
-        if (!isspace(lexer->active))
+        if (!isspace(lexer->active) && lexer->active != EOF)
             ungetc(lexer->active, lexer->buffer);
 
         free(literal);
@@ -226,29 +226,6 @@ char* strcat_steroids(char* dest, char* src) {
         ;
 
     return --dest;
-}
-
-char* parseTreeToHTML(Node* node, size_t* out, size_t init) {
-    size_t buffer_size = 1024;
-    char* buffer = (char*)malloc(buffer_size);
-
-    buffer[0] = '\0';
-
-    for (size_t i = 0; i < node->attrPosition; i++) {
-        // concatenate each attribute to the buffer
-        buffer = strcat_steroids(buffer, node->attributes[i]);
-    }
-
-    if (node->childSize > 0) {
-        for (size_t i = 0; i < node->childSize; i++) {
-            // recursively concatenate child nodes to the buffer
-            buffer = parseTreeToHTML(node->children[i], out, init);
-        }
-    }
-
-    *out += strlen(buffer);
-
-    return buffer;
 }
 
 unsigned long hash(const char* str) {
