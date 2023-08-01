@@ -32,9 +32,12 @@ typedef struct {
 } Parser;
 
 void  freeNode(Node* node);
-void  freeParser(Parser* parser);
+void  freeParser();
+void  generateNodeTree();
 Node* defaultNode();
 void  attributeResize(Node* node);
-void  parseTreeToHTML(Node* node, int level);
+void  iterateAllChildren(Node* node);
+
+Parser* parser;
 
 #endif

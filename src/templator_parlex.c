@@ -9,7 +9,7 @@
 #include "../include/string_reps.h"
 #include "../include/rainbow_output.h"
 
-void scanLiterals(Lexer* lexer, Token* token) {
+void scanLiterals(Token* token) {
     if (isprint(lexer->active)) {
         char* literal = (char*)malloc(sizeof(char) * 11);
         int size = 0;
@@ -46,7 +46,7 @@ void scanLiterals(Lexer* lexer, Token* token) {
     }
 }
 
-void generateNodeTree(Lexer* lexer, Parser* parser) {
+void generateNodeTree() {
     while ((lexer->active = getc(lexer->buffer)) != EOF) {
         if (isspace(lexer->active) || !isprint(lexer->active))
             continue;
@@ -66,12 +66,12 @@ void generateNodeTree(Lexer* lexer, Parser* parser) {
                 tmp.value = (char*)malloc(sizeof(char));
 
                 lexer->active = getc(lexer->buffer);
-                scanLiterals(lexer, &tmp);
+                scanLiterals(&tmp);
 
                 // next character isn't alnum (/)
                 if (*tmp.value == '<') {
                     lexer->active = getc(lexer->buffer);
-                    scanLiterals(lexer, &tmp);
+                    scanLiterals(&tmp);
                 }
 
                 // scanLiterals causes the lexer->position to increase by tmp.size
@@ -108,7 +108,7 @@ void generateNodeTree(Lexer* lexer, Parser* parser) {
                     .value = (char*)malloc(sizeof(char) * 1),
                 };
                 
-                scanLiterals(lexer, &token);
+                scanLiterals(&token);
                 Node* activeNode = parser->active;
 
                 if (activeNode != NULL && !activeNode->hasFinishedDeclaration) {
@@ -118,7 +118,7 @@ void generateNodeTree(Lexer* lexer, Parser* parser) {
             }
         }
 
-        tokenResize(lexer);
+        tokenResize();
 
         ungetc(lexer->active, lexer->buffer);
         // memcpy(&lexer->token[lexer->position], &token, sizeof(token));
@@ -130,7 +130,7 @@ void generateNodeTree(Lexer* lexer, Parser* parser) {
     lexer->token[lexer->position++] = (Token) { END_OF_FILE, "", 1 };
 }
 
-void iterateTokens(Lexer* lexer) {
+void iterateTokens() {
     printf(GRN "beginning token iteration\n" RESET);
     int index = 0;
     while (lexer->token[index].type != END_OF_FILE && index <= 1000) {
@@ -140,7 +140,7 @@ void iterateTokens(Lexer* lexer) {
     }
 }
 
-void freeLexer(Lexer* lexer) {
+void freeLexer() {
     fclose(lexer->buffer);
     free(lexer->token);
     free(lexer);
@@ -168,7 +168,7 @@ void freeNode(Node* node) {
     free(node);
 }
 
-void freeParser(Parser* parser) {
+void freeParser() {
     if (parser == NULL)
         return;
 
@@ -200,7 +200,7 @@ Node* defaultNode() {
     return node;
 }
 
-void tokenResize(Lexer* lexer) {
+void tokenResize() {
     if (lexer->position >= lexer->size) {
         lexer->size += 50;
         lexer->token = (Token*)realloc(lexer->token, sizeof(Token) * lexer->size);
@@ -226,6 +226,16 @@ char* strcat_steroids(char* dest, char* src) {
         ;
 
     return --dest;
+}
+
+void iterateAllChildren(Node* node) {
+    if (node == NULL)
+        return;
+
+    printf("node attr0: %s\n", node->attributes[0]);
+
+    for (int i = 0; i < node->childPosition; i++)
+        iterateAllChildren(node->children[i]);
 }
 
 unsigned long hash(const char* str) {

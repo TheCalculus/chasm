@@ -15,9 +15,6 @@ char* token_reps[END_OF_FILE + 1] = {
     "HTML_CLOSE",     "HTML_CLOSE_CAST", "EQUAL_SIGN",   "END_OF_FILE",
 };
 
-Lexer*  lexer;
-Parser* parser;
-
 int prepare_input() {
     lexer  = malloc(sizeof(Lexer));
     parser = malloc(sizeof(Parser));
@@ -40,11 +37,12 @@ int prepare_input() {
     lexer->active = fgetc(lexer->buffer);
     ungetc(lexer->active, lexer->buffer);
 
-    generateNodeTree(lexer, parser); // templator_parlex.c
+    generateNodeTree(); // templator_parlex.c
+    iterateAllChildren(&parser->nodes[0]);
 
-    // iterateTokens(lexer); // templator_parlex.c
-    freeLexer(lexer);        // templator_parlex.c
-    freeParser(parser);      // templator_parlex.c
+    // iterateTokens(); // templator_parlex.c
+    freeLexer();       // templator_parlex.c
+    freeParser();      // templator_parlex.c
 
     return 0;
 }
