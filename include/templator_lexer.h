@@ -43,6 +43,6 @@ void iterateTokens();
 void freeLexer();
 void tokenResize();
 
-Lexer*  lexer;
+Lexer* lexer;
 
 #endif

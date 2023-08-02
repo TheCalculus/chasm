@@ -79,7 +79,7 @@ void generateNodeTree() {
                     ungetc(tmp.value[i], lexer->buffer);
 
                 if (strncmp(tmp.value, parser->active->attributes[0], tmp.size) == 0) {
-                    printf("'%s' == '%s' (end tag found)\n", tmp.value, parser->active->attributes[0]);
+                    // printf("'%s' == '%s' (end tag found)\n", tmp.value, parser->active->attributes[0]);
 
                     parser->active->hasFinishedDeclaration = true;
                     parser->active = parser->active->parent;
@@ -113,7 +113,8 @@ void generateNodeTree() {
 
                 if (activeNode != NULL && !activeNode->hasFinishedDeclaration) {
                     attributeResize(activeNode);
-                    strncpy(activeNode->attributes[activeNode->attrPosition++], token.value, 5);
+                    // strncpy(activeNode->attributes[activeNode->attrPosition++], token.value, 2);
+                    memcpy(activeNode->attributes[activeNode->attrPosition++], token.value, 5);
                 }
             }
         }
@@ -121,7 +122,6 @@ void generateNodeTree() {
         tokenResize();
 
         ungetc(lexer->active, lexer->buffer);
-        // memcpy(&lexer->token[lexer->position], &token, sizeof(token));
 
         lexer->active = getc(lexer->buffer);
         lexer->position++;
@@ -152,10 +152,8 @@ void freeNode(Node* node) {
     if (node == NULL)
         return;
 
-    for (size_t i = 0; i < node->attrPosition; i++) {
+    for (size_t i = 0; i < node->attrPosition; i++)
         free(node->attributes[i]);
-        free(node->value[i]);
-    }
 
     if (node->isNested) {
         for (size_t i = 0; i < node->childPosition; i++)
@@ -196,27 +194,28 @@ Node* defaultNode() {
         node->value[i]      = (char*)malloc(sizeof(char) * size);
         node->children[i]   = (Node*)malloc(sizeof(Node));
     }
-
+    
     return node;
 }
+
 
 void tokenResize() {
     if (lexer->position >= lexer->size) {
         lexer->size += 50;
         lexer->token = (Token*)realloc(lexer->token, sizeof(Token) * lexer->size);
-        printf("Token* resized to %zu\n", lexer->size);
+        // printf("Token* resized to %zu\n", lexer->size);
     }
 }
 
 void attributeResize(Node* node) {
     if (node->attrPosition >= node->attrSize) {
-        node->attrSize += 5;
+        node->attrSize++;
         node->attributes = (char**)realloc(node->attributes, sizeof(char*) * node->attrSize);
 
-        for (int i = node->attrSize - 5; i < node->attrSize; i++)
-            node->attributes[i] = (char*)malloc(sizeof(char) * 5);
+        if (node->attributes == NULL)
+            exit(1);
 
-        printf("node->attributes (char**) resized to %zu\n", node->attrSize);
+        node->attributes[node->attrSize - 1] = (char*)malloc(sizeof(char) * 5);
     }
 }
 
@@ -229,10 +228,20 @@ char* strcat_steroids(char* dest, char* src) {
 }
 
 void iterateAllChildren(Node* node) {
-    if (node == NULL)
+    if (node == NULL) {
+        printf("node is NULL\n");
         return;
+    }
 
-    printf("node attr0: %s\n", node->attributes[0]);
+    if (node->attributes == NULL) {
+        printf("this aint right...");
+        fflush(stdout);
+        exit(1);
+    } else {
+        printf("attrSize: %zu\n", node->attrSize);
+        printf("attributes: %p\n", node->attributes); // no crash
+        printf("attributes[0]: %s\n", &node->attributes); // segfault
+    }
 
     for (int i = 0; i < node->childPosition; i++)
         iterateAllChildren(node->children[i]);
