@@ -72,10 +72,12 @@ error was originating due to free'ing node->attributes, probably because each el
 ```
 this time it occured in freeParser, probably because parser->nodes was free'd. each individual node had been free'd within nodes, so there was no need to free this.  
 suspicion was proven right. bug resolved #3d98d3e  
+[!] there is reason to believe that this was NOT the case, and there were indeed other reasons for this issue. the current node and parser system is going to be modified to use `nodemode` (see TODO) which *should* make this issue irrelevant  
 ------------------------------------------------------------ (resolved, see #3d98d3e)  
 ## (24/07/23) `parse` in `templator_parlex.c` has been renamed to generateNodeTree to better match its purpose  
 ------------------------------------------------------------
-bug 4 (parseTreeToHTML not iterating through node sequence correctly)
+bug 4 (parseTreeToHTML not iterating through node sequence correctly)  
 the cause of this bug is pretty obvious, as the node sequence is a tree-like structure
-rather than a one-dimensional list. since there is always garaunteed to be only one root node
-(html), iterating through each "node" results in only 1 iteration
+rather than a one-dimensional list. since there is always guaranteed to be only one root node
+(html), iterating through each "node" results in only 1 iteration.  
+------------------------------------------------------------
