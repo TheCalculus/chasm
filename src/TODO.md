@@ -1,6 +1,7 @@
 # FEATURES  
 status | description | identifier  
 
+- [ ] replace current DOM / nodetree system with `nodemode` (see [https://github.com/TheCalculus/nodemode](this))
 - [ ] implement webassembly support for client-side execution of c code  
 - [ ] make server multithreaded and more robust to support more than one user securely (or use a library to do this)  
 - [ ] make it possible for chasm to work with any server (it just needs to be told when and where changes occur)
